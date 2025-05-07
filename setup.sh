@@ -1,17 +1,25 @@
-mkdir -p ~/.streamlit/
+#!/bin/bash
+
+# Criar diretório para configuração do Streamlit
+mkdir -p ~/.streamlit
+
+# Configurar o arquivo config.toml
+cat > ~/.streamlit/config.toml << EOL
+[server]
+maxUploadSize = 200
+enableCORS = false
+enableXsrfProtection = false
+port = $PORT
+
+[browser]
+gatherUsageStats = false
+EOL
+
+# Configurar variáveis de ambiente
+export PYTHONUNBUFFERED=1
+export PORT=8501
 
 echo "\
 [general]\n\
 email = \"\"\n\
-" > ~/.streamlit/credentials.toml
-
-echo "\
-[server]\n\
-maxUploadSize = 200\n\
-enableCORS = false\n\
-enableXsrfProtection = false\n\
-port = $PORT\n\
-\n\
-[browser]\n\
-gatherUsageStats = false\n\
-" > ~/.streamlit/config.toml 
+" > ~/.streamlit/credentials.toml 

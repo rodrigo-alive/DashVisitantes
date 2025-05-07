@@ -440,4 +440,4 @@ def main():
         st.download_button('Clique aqui para baixar o PPTX', pptx_bytes, file_name='dashboard_cubo.pptx')
 
 if __name__ == '__main__':
-    main()
+    main() 
