@@ -14,7 +14,6 @@ from pptx.dml.color import RGBColor
 
 # Configurações do Streamlit para permitir upload de arquivos
 st.set_option('deprecation.showfileUploaderEncoding', False)
-st.set_option('server.maxUploadSize', 200)  # Aumenta o limite de upload para 200MB
 
 # Configuração da página
 st.set_page_config(
