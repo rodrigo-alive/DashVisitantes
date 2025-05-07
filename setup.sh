@@ -10,6 +10,7 @@ echo "\
 maxUploadSize = 200\n\
 enableCORS = false\n\
 enableXsrfProtection = false\n\
+port = $PORT\n\
 \n\
 [browser]\n\
 gatherUsageStats = false\n\
