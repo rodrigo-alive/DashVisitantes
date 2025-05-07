@@ -362,6 +362,25 @@ def main():
             color: {CORES_ITAU['azul_escuro']};
             margin-bottom: 1em;
         }}
+        .frequent-visitors-table {{
+            background: {CORES_ITAU['cinza_claro']};
+            border-radius: 18px;
+            padding: 24px;
+            margin: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }}
+        .frequent-visitors-table .stDataFrame {{
+            background: {CORES_ITAU['cinza_claro']};
+            border-radius: 18px;
+            padding: 0;
+            margin: 0;
+        }}
+        .frequent-visitors-table .stDataFrame > div {{
+            background: {CORES_ITAU['cinza_claro']};
+            border-radius: 18px;
+            padding: 0;
+            margin: 0;
+        }}
         </style>
     """, unsafe_allow_html=True)
     
@@ -416,10 +435,12 @@ def main():
     with col1:
         st.plotly_chart(grafico_convidados_por_dia_semana(df_filtro), use_container_width=True)
     with col2:
+        st.markdown('<div class="frequent-visitors-table">', unsafe_allow_html=True)
         st.subheader('Visitantes Frequentes por Empresa (>4 visitas no mês)')
         tabela_frequentes = visitantes_frequentes(df_filtro)
         if not tabela_frequentes.empty:
             st.dataframe(tabela_frequentes, height=420)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     # Terceira seção (consolidado e painel)
     st.markdown('---')
