@@ -60,9 +60,9 @@ def carregar_dados():
                     df = pd.read_excel(uploaded_file, engine='openpyxl')
                 except:
                     df = pd.read_excel(uploaded_file, engine='xlrd')
-            
             st.sidebar.success('Arquivo carregado com sucesso!')
-            
+            # Salva o DataFrame no session_state
+            st.session_state['df'] = df.copy()
         except Exception as e:
             st.sidebar.error(f'Erro ao ler o arquivo: {str(e)}')
             st.sidebar.info('Dica: Se o arquivo for Excel 97-2003 (.xls), tente salvá-lo como Excel 2007 ou superior (.xlsx)')
@@ -74,9 +74,14 @@ def carregar_dados():
             try:
                 df = pd.read_csv(StringIO(clipboard_data), sep='\t')
                 st.sidebar.success('Dados colados com sucesso!')
+                st.session_state['df'] = df.copy()
             except Exception as e:
                 st.sidebar.error(f'Erro ao ler os dados colados: {str(e)}')
                 return None
+    
+    # Se não carregou nada agora, tenta recuperar do session_state
+    if df is None and 'df' in st.session_state:
+        df = st.session_state['df']
     
     if df is not None:
         df = preprocessar_dados(df)
@@ -373,7 +378,9 @@ def main():
         return
 
     # Cards em linha horizontal usando st.columns, igualmente espaçados
-    col1, col2, col3, col4, col5 = st.columns(5)
+    col0, col1, col2, col3, col4, col5 = st.columns(6)
+    with col0:
+        st.markdown(f'<div class="modern-card"><div class="card-label">Período</div><div class="big-number">{df["Data do Convite"].dt.strftime("%m/%Y")}</div></div>', unsafe_allow_html=True)
     with col1:
         st.markdown(f'<div class="modern-card"><div class="card-label">Total de Convites</div><div class="big-number">{total_convites(df)}</div></div>', unsafe_allow_html=True)
     with col2:
@@ -419,7 +426,7 @@ def main():
         st.subheader('Visitantes Frequentes por Empresa (>4 visitas no mês)')
         tabela_frequentes = visitantes_frequentes(df_filtro)
         if not tabela_frequentes.empty:
-            st.dataframe(tabela_frequentes, height=420)
+            st.dataframe(tabela_frequentes, height=370, use_container_width=True)
 
     # Terceira seção (consolidado e painel)
     st.markdown('---')
