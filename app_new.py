@@ -423,12 +423,10 @@ def main():
     with col1:
         st.plotly_chart(grafico_convidados_por_dia_semana(df_filtro), use_container_width=True)
     with col2:
-        st.markdown('<div class="frequent-visitors-table">', unsafe_allow_html=True)
         st.subheader('Visitantes Frequentes por Empresa (>4 visitas no mês)')
         tabela_frequentes = visitantes_frequentes(df_filtro)
         if not tabela_frequentes.empty:
-            st.dataframe(tabela_frequentes, height=420)
-        st.markdown('</div>', unsafe_allow_html=True)
+            st.dataframe(tabela_frequentes, height=340, use_container_width=True)
 
     # Terceira seção (consolidado e painel)
     st.markdown('---')
