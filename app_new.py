@@ -368,18 +368,38 @@ def main():
             padding: 24px;
             margin: 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            min-width: 100%;
+            max-width: 100%;
         }}
-        .frequent-visitors-table .stDataFrame {{
+        .custom-table-wrapper {{
+            width: 100%;
+            overflow-x: auto;
+        }}
+        table.custom-table {{
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
             background: {CORES_ITAU['cinza_claro']};
             border-radius: 18px;
-            padding: 0;
-            margin: 0;
+            font-size: 1.1em;
         }}
-        .frequent-visitors-table .stDataFrame > div {{
+        table.custom-table th, table.custom-table td {{
+            padding: 10px 12px;
+            text-align: left;
+        }}
+        table.custom-table th {{
+            background: #e6e8f0;
+            color: #003366;
+            font-weight: bold;
+        }}
+        table.custom-table tr:nth-child(even) {{
+            background: #f7f8fa;
+        }}
+        table.custom-table tr:nth-child(odd) {{
             background: {CORES_ITAU['cinza_claro']};
-            border-radius: 18px;
-            padding: 0;
-            margin: 0;
+        }}
+        table.custom-table td {{
+            color: #222;
         }}
         </style>
     """, unsafe_allow_html=True)
@@ -439,7 +459,9 @@ def main():
         st.subheader('Visitantes Frequentes por Empresa (>4 visitas no mês)')
         tabela_frequentes = visitantes_frequentes(df_filtro)
         if not tabela_frequentes.empty:
-            st.dataframe(tabela_frequentes, height=420)
+            # Renderizar tabela como HTML estilizado
+            html_table = tabela_frequentes.to_html(index=False, classes='custom-table', border=0, justify='center')
+            st.markdown(f'<div class="custom-table-wrapper">{html_table}</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
     # Terceira seção (consolidado e painel)
