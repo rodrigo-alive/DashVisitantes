@@ -149,7 +149,6 @@ def media_convidados_dia_util(df):
 # Funções para gráficos
 # =====================
 def grafico_top_empresas(df):
-    # Remover "Cubo" do top 10
     df_empresas = df[~df['Cliente'].str.lower().str.contains('cubo')]
     top_empresas = df_empresas['Cliente'].value_counts().head(10)
     df_plot = pd.DataFrame({
@@ -160,7 +159,7 @@ def grafico_top_empresas(df):
         df_plot,
         x='Empresa',
         y='Convites',
-        title='Top 10 Empresas com Mais Convites',
+        title='Top 10 Empresas',
         color_discrete_sequence=[CORES_ITAU['azul_escuro']]
     )
     fig.update_traces(text=df_plot['Convites'], textposition='outside')
@@ -171,14 +170,14 @@ def grafico_top_empresas(df):
         title_font_family='Arial',
         margin=dict(t=60, b=40, l=40, r=40),
         height=420,
-        xaxis=dict(tickangle=-30, automargin=True)
+        xaxis=dict(tickangle=-30, automargin=True, title=None),
+        yaxis=dict(title=None)
     )
     return fig
 
 def grafico_convidados_por_data(df):
     if df.empty:
         return px.bar(title='Sem dados para exibir')
-    # Criar range completo de dias do mês selecionado
     data_inicio = df['Data do Convite'].min()
     data_fim = df['Data do Convite'].max()
     if pd.isna(data_inicio) or pd.isna(data_fim):
@@ -201,13 +200,14 @@ def grafico_convidados_por_data(df):
         color_discrete_sequence=[CORES_ITAU['laranja']]
     )
     fig.update_traces(text=df_plot['Convidados'], textposition='outside')
-    fig.update_xaxes(tickangle=0, dtick=1, tickmode='array', tickvals=[str(i) for i in range(1, dias_no_mes+1)], ticktext=[str(i) for i in range(1, dias_no_mes+1)])
+    fig.update_xaxes(tickangle=0, dtick=1, tickmode='array', tickvals=[str(i) for i in range(1, dias_no_mes+1)], ticktext=[str(i) for i in range(1, dias_no_mes+1)], title=None)
     fig.update_layout(
         plot_bgcolor=CORES_ITAU['cinza_claro'],
         paper_bgcolor=CORES_ITAU['cinza_claro'],
         title_font_size=22,
         title_font_family='Arial',
-        margin=dict(t=60, b=40, l=40, r=40)
+        margin=dict(t=60, b=40, l=40, r=40),
+        yaxis=dict(title=None)
     )
     return fig
 
@@ -231,7 +231,9 @@ def grafico_convidados_por_dia_semana(df):
         paper_bgcolor=CORES_ITAU['cinza_claro'],
         title_font_size=22,
         title_font_family='Arial',
-        margin=dict(t=60, b=40, l=40, r=40)
+        margin=dict(t=60, b=40, l=40, r=40),
+        xaxis=dict(title=None),
+        yaxis=dict(title=None)
     )
     return fig
 
