@@ -159,7 +159,7 @@ def grafico_top_empresas(df):
         df_plot,
         x='Empresa',
         y='Convites',
-        title='Top 10 Empresas',
+        title='Top 10 Empresas que Receberam Convidados',
         color_discrete_sequence=[CORES_ITAU['azul_escuro']]
     )
     fig.update_traces(text=df_plot['Convites'], textposition='outside')
@@ -168,6 +168,7 @@ def grafico_top_empresas(df):
         paper_bgcolor=CORES_ITAU['cinza_claro'],
         title_font_size=22,
         title_font_family='Arial',
+        title_x=0.5,
         margin=dict(t=60, b=40, l=40, r=40),
         height=420,
         xaxis=dict(tickangle=-30, automargin=True, title=None),
@@ -206,6 +207,7 @@ def grafico_convidados_por_data(df):
         paper_bgcolor=CORES_ITAU['cinza_claro'],
         title_font_size=22,
         title_font_family='Arial',
+        title_x=0.5,
         margin=dict(t=60, b=40, l=40, r=40),
         yaxis=dict(title=None)
     )
@@ -231,6 +233,7 @@ def grafico_convidados_por_dia_semana(df):
         paper_bgcolor=CORES_ITAU['cinza_claro'],
         title_font_size=22,
         title_font_family='Arial',
+        title_x=0.5,
         margin=dict(t=60, b=40, l=40, r=40),
         xaxis=dict(title=None),
         yaxis=dict(title=None)
@@ -356,26 +359,44 @@ def main():
             justify-content: center;
             align-items: center;
         }}
-        .modern-card .big-number {{
-            font-size: 2.5em;
+        .modern-title {{
+            font-size: 2.1em;
             font-weight: bold;
             color: {CORES_ITAU['azul_escuro']};
+            text-align: center;
+            margin-bottom: 0.7em;
         }}
-        .modern-card .card-label {{
-            font-size: 1.2em;
-            color: {CORES_ITAU['laranja']};
-            font-weight: 600;
+        .reset-btn-top {{
+            position: absolute;
+            top: 18px;
+            right: 32px;
+            z-index: 10;
+            font-size: 0.9em;
+            padding: 2px 10px;
+            border-radius: 8px;
+            background: #f5f6fa;
+            color: #003366;
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            opacity: 0.7;
         }}
-        .main-title {{
-            font-size: 2.5em;
-            font-weight: bold;
-            color: {CORES_ITAU['azul_escuro']};
-            margin-bottom: 1em;
+        .reset-btn-top:hover {{
+            opacity: 1;
         }}
         </style>
     """, unsafe_allow_html=True)
-    
-    st.markdown('<div class="main-title">Dashboard de Visitas - Cubo Itaú</div>', unsafe_allow_html=True)
+
+    # Botão de reset no topo direito
+    reset_col, _ = st.columns([0.95, 0.05])
+    with reset_col:
+        st.markdown('<div style="display:flex; justify-content:flex-end; align-items:center; height:30px;">'
+                    '<form action="#"><button class="reset-btn-top" type="submit" name="reset_empresa">Limpar seleção</button></form>'
+                    '</div>', unsafe_allow_html=True)
+        if st.query_params.get("reset_empresa") is not None:
+            st.session_state['empresa_selecionada'] = None
+            st.experimental_rerun()
+
+    st.markdown('<div class="main-title modern-title">Dashboard de Visitas - Cubo Itaú</div>', unsafe_allow_html=True)
     
     df = carregar_dados()
     if df is None:
@@ -401,6 +422,23 @@ def main():
         st.warning('Não há dados para o período selecionado.')
         return
 
+    # Botão de filtro Notificados/Não Notificados no topo
+    filtro_col1, filtro_col2, _ = st.columns([0.12, 0.12, 0.76])
+    with filtro_col1:
+        if 'filtro_notificado' not in st.session_state:
+            st.session_state['filtro_notificado'] = 'Todos'
+        if st.button('Mostrar Apenas Notificados', key='btn_notificados', help='Filtrar apenas convidados notificados'):
+            st.session_state['filtro_notificado'] = 'Notificados'
+        if st.button('Mostrar Apenas Não Notificados', key='btn_nao_notificados', help='Filtrar apenas convidados não notificados'):
+            st.session_state['filtro_notificado'] = 'Não Notificados'
+        if st.button('Mostrar Todos', key='btn_todos', help='Mostrar todos os convidados'):
+            st.session_state['filtro_notificado'] = 'Todos'
+    # Aplica o filtro
+    if st.session_state['filtro_notificado'] == 'Notificados':
+        df_filtro = df_filtro[df_filtro['Anfitrião Notificado'].str.lower() == 'sim']
+    elif st.session_state['filtro_notificado'] == 'Não Notificados':
+        df_filtro = df_filtro[df_filtro['Anfitrião Notificado'].str.lower() == 'não']
+
     # Cards em linha horizontal usando st.columns, igualmente espaçados
     col0, col1, col2, col3, col4, col5 = st.columns(6)
     with col0:
@@ -425,10 +463,6 @@ def main():
         selected = plotly_events(fig_top_empresas, click_event=True, select_event=False, hover_event=False, override_height=420, override_width=None)
         if selected:
             st.session_state['empresa_selecionada'] = selected[0]['x']
-        # Botão para limpar seleção
-        if st.session_state['empresa_selecionada']:
-            if st.button('Limpar seleção de empresa'):
-                st.session_state['empresa_selecionada'] = None
     with col2:
         if st.session_state['empresa_selecionada']:
             df_empresa = df_filtro[df_filtro['Cliente'] == st.session_state['empresa_selecionada']]
