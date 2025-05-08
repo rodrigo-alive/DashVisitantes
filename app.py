@@ -377,21 +377,6 @@ def main():
         st.info('Por favor, carregue um arquivo Excel ou cole os dados para iniciar a análise.')
         return
 
-    # Cards em linha horizontal usando st.columns, igualmente espaçados
-    col0, col1, col2, col3, col4, col5 = st.columns(6)
-    with col0:
-        st.markdown(f'<div class="modern-card"><div class="card-label">Período</div><div class="big-number">{df["Data do Convite"].dt.strftime("%m/%Y")}</div></div>', unsafe_allow_html=True)
-    with col1:
-        st.markdown(f'<div class="modern-card"><div class="card-label">Total de Convites</div><div class="big-number">{total_convites(df)}</div></div>', unsafe_allow_html=True)
-    with col2:
-        st.markdown(f'<div class="modern-card"><div class="card-label">Anfitriões Notificados</div><div class="big-number">{anfitrioes_notificados(df)}</div></div>', unsafe_allow_html=True)
-    with col3:
-        st.markdown(f'<div class="modern-card"><div class="card-label">Não Notificados</div><div class="big-number">{anfitrioes_nao_notificados(df)}</div></div>', unsafe_allow_html=True)
-    with col4:
-        st.markdown(f'<div class="modern-card"><div class="card-label">Convidados Cubo</div><div class="big-number">{total_convidados_cubo(df)}</div></div>', unsafe_allow_html=True)
-    with col5:
-        st.markdown(f'<div class="modern-card"><div class="card-label">Média por Dia Útil</div><div class="big-number">{media_convidados_dia_util(df)}</div></div>', unsafe_allow_html=True)
-
     # Filtro de período
     st.sidebar.header('Filtro de Período')
     if df.empty or 'Ano' not in df.columns or 'Mês' not in df.columns:
@@ -410,6 +395,21 @@ def main():
     if df_filtro.empty:
         st.warning('Não há dados para o período selecionado.')
         return
+
+    # Cards em linha horizontal usando st.columns, igualmente espaçados
+    col0, col1, col2, col3, col4, col5 = st.columns(6)
+    with col0:
+        st.markdown(f'<div class="modern-card"><div class="card-label">Período</div><div class="big-number">{mes_sel:02d}/{ano_sel}</div></div>', unsafe_allow_html=True)
+    with col1:
+        st.markdown(f'<div class="modern-card"><div class="card-label">Total de Convites</div><div class="big-number">{total_convites(df)}</div></div>', unsafe_allow_html=True)
+    with col2:
+        st.markdown(f'<div class="modern-card"><div class="card-label">Anfitriões Notificados</div><div class="big-number">{anfitrioes_notificados(df)}</div></div>', unsafe_allow_html=True)
+    with col3:
+        st.markdown(f'<div class="modern-card"><div class="card-label">Não Notificados</div><div class="big-number">{anfitrioes_nao_notificados(df)}</div></div>', unsafe_allow_html=True)
+    with col4:
+        st.markdown(f'<div class="modern-card"><div class="card-label">Convidados Cubo</div><div class="big-number">{total_convidados_cubo(df)}</div></div>', unsafe_allow_html=True)
+    with col5:
+        st.markdown(f'<div class="modern-card"><div class="card-label">Média por Dia Útil</div><div class="big-number">{media_convidados_dia_util(df)}</div></div>', unsafe_allow_html=True)
 
     # Primeira linha de gráficos (2 colunas)
     col1, col2 = st.columns(2)
