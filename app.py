@@ -11,6 +11,7 @@ from pptx.enum.text import PP_ALIGN
 from PIL import Image
 import base64
 from pptx.dml.color import RGBColor
+from streamlit_plotly_events import plotly_events
 
 # Configurações do Streamlit para permitir upload de arquivos
 st.set_option('deprecation.showfileUploaderEncoding', False)
@@ -414,14 +415,27 @@ def main():
     # Primeira linha de gráficos (2 colunas)
     col1, col2 = st.columns(2)
     with col1:
-        st.plotly_chart(grafico_top_empresas(df_filtro), use_container_width=True)
+        fig_top_empresas = grafico_top_empresas(df_filtro)
+        selected = plotly_events(fig_top_empresas, click_event=True, select_event=False, hover_event=False, override_height=420, override_width=None)
+        empresa_selecionada = None
+        if selected:
+            empresa_selecionada = selected[0]['x']
+            st.info(f'Empresa selecionada: {empresa_selecionada}')
     with col2:
-        st.plotly_chart(grafico_convidados_por_data(df_filtro), use_container_width=True)
+        if empresa_selecionada:
+            df_empresa = df_filtro[df_filtro['Cliente'] == empresa_selecionada]
+            st.plotly_chart(grafico_convidados_por_data(df_empresa), use_container_width=True)
+        else:
+            st.plotly_chart(grafico_convidados_por_data(df_filtro), use_container_width=True)
 
     # Segunda linha de gráficos (2 colunas)
     col1, col2 = st.columns(2)
     with col1:
-        st.plotly_chart(grafico_convidados_por_dia_semana(df_filtro), use_container_width=True)
+        if empresa_selecionada:
+            df_empresa = df_filtro[df_filtro['Cliente'] == empresa_selecionada]
+            st.plotly_chart(grafico_convidados_por_dia_semana(df_empresa), use_container_width=True)
+        else:
+            st.plotly_chart(grafico_convidados_por_dia_semana(df_filtro), use_container_width=True)
     with col2:
         st.subheader('Visitantes Frequentes por Empresa (>4 visitas no mês)')
         tabela_frequentes = visitantes_frequentes(df_filtro)
