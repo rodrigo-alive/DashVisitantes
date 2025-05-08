@@ -169,7 +169,9 @@ def grafico_top_empresas(df):
         paper_bgcolor=CORES_ITAU['cinza_claro'],
         title_font_size=22,
         title_font_family='Arial',
-        margin=dict(t=60, b=40, l=40, r=40)
+        margin=dict(t=60, b=40, l=40, r=40),
+        height=420,
+        xaxis=dict(tickangle=-30, automargin=True)
     )
     return fig
 
@@ -414,16 +416,20 @@ def main():
 
     # Primeira linha de gráficos (2 colunas)
     col1, col2 = st.columns(2)
+    if 'empresa_selecionada' not in st.session_state:
+        st.session_state['empresa_selecionada'] = None
     with col1:
         fig_top_empresas = grafico_top_empresas(df_filtro)
         selected = plotly_events(fig_top_empresas, click_event=True, select_event=False, hover_event=False, override_height=420, override_width=None)
-        empresa_selecionada = None
         if selected:
-            empresa_selecionada = selected[0]['x']
-            st.info(f'Empresa selecionada: {empresa_selecionada}')
+            st.session_state['empresa_selecionada'] = selected[0]['x']
+        # Botão para limpar seleção
+        if st.session_state['empresa_selecionada']:
+            if st.button('Limpar seleção de empresa'):
+                st.session_state['empresa_selecionada'] = None
     with col2:
-        if empresa_selecionada:
-            df_empresa = df_filtro[df_filtro['Cliente'] == empresa_selecionada]
+        if st.session_state['empresa_selecionada']:
+            df_empresa = df_filtro[df_filtro['Cliente'] == st.session_state['empresa_selecionada']]
             st.plotly_chart(grafico_convidados_por_data(df_empresa), use_container_width=True)
         else:
             st.plotly_chart(grafico_convidados_por_data(df_filtro), use_container_width=True)
@@ -431,8 +437,8 @@ def main():
     # Segunda linha de gráficos (2 colunas)
     col1, col2 = st.columns(2)
     with col1:
-        if empresa_selecionada:
-            df_empresa = df_filtro[df_filtro['Cliente'] == empresa_selecionada]
+        if st.session_state['empresa_selecionada']:
+            df_empresa = df_filtro[df_filtro['Cliente'] == st.session_state['empresa_selecionada']]
             st.plotly_chart(grafico_convidados_por_dia_semana(df_empresa), use_container_width=True)
         else:
             st.plotly_chart(grafico_convidados_por_dia_semana(df_filtro), use_container_width=True)
