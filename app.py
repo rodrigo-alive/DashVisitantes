@@ -366,35 +366,70 @@ def main():
             text-align: center;
             margin-bottom: 0.7em;
         }}
-        .reset-btn-top {{
+        .filter-btn {{
+            font-size: 0.85em;
+            padding: 4px 12px;
+            border-radius: 6px;
+            background: {CORES_ITAU['cinza_claro']};
+            color: {CORES_ITAU['azul_escuro']};
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            margin: 0 4px;
+            transition: all 0.3s ease;
+        }}
+        .filter-btn:hover {{
+            background: {CORES_ITAU['azul_escuro']};
+            color: white;
+        }}
+        .filter-btn.active {{
+            background: {CORES_ITAU['azul_escuro']};
+            color: white;
+        }}
+        .filter-container {{
             position: absolute;
             top: 18px;
             right: 32px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
             z-index: 10;
-            font-size: 0.9em;
-            padding: 2px 10px;
-            border-radius: 8px;
-            background: #f5f6fa;
-            color: #003366;
-            border: 1px solid #e0e0e0;
-            cursor: pointer;
-            opacity: 0.7;
         }}
-        .reset-btn-top:hover {{
-            opacity: 1;
+        .card-label {{
+            font-size: 1.1em;
+            color: {CORES_ITAU['azul_escuro']};
+            margin-bottom: 8px;
+        }}
+        .big-number {{
+            font-size: 2.2em;
+            font-weight: bold;
+            color: {CORES_ITAU['laranja']};
         }}
         </style>
     """, unsafe_allow_html=True)
 
-    # Botão de reset no topo direito
-    reset_col, _ = st.columns([0.95, 0.05])
-    with reset_col:
-        st.markdown('<div style="display:flex; justify-content:flex-end; align-items:center; height:30px;">'
-                    '<form action="#"><button class="reset-btn-top" type="submit" name="reset_empresa">Limpar seleção</button></form>'
-                    '</div>', unsafe_allow_html=True)
-        if st.query_params.get("reset_empresa") is not None:
+    # Container para os botões de filtro no topo direito
+    st.markdown('<div class="filter-container">', unsafe_allow_html=True)
+    
+    # Botões de filtro
+    if 'filtro_notificado' not in st.session_state:
+        st.session_state['filtro_notificado'] = 'Todos'
+    
+    col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
+    with col1:
+        if st.button('Notificados', key='btn_notificados', help='Filtrar apenas convidados notificados'):
+            st.session_state['filtro_notificado'] = 'Notificados'
+    with col2:
+        if st.button('Não Notificados', key='btn_nao_notificados', help='Filtrar apenas convidados não notificados'):
+            st.session_state['filtro_notificado'] = 'Não Notificados'
+    with col3:
+        if st.button('Todos', key='btn_todos', help='Mostrar todos os convidados'):
+            st.session_state['filtro_notificado'] = 'Todos'
+    with col4:
+        if st.button('Limpar seleção', key='btn_limpar', help='Limpar seleção atual'):
             st.session_state['empresa_selecionada'] = None
             st.experimental_rerun()
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="main-title modern-title">Dashboard de Visitas - Cubo Itaú</div>', unsafe_allow_html=True)
     
@@ -422,17 +457,6 @@ def main():
         st.warning('Não há dados para o período selecionado.')
         return
 
-    # Botão de filtro Notificados/Não Notificados no topo
-    filtro_col1, filtro_col2, _ = st.columns([0.12, 0.12, 0.76])
-    with filtro_col1:
-        if 'filtro_notificado' not in st.session_state:
-            st.session_state['filtro_notificado'] = 'Todos'
-        if st.button('Mostrar Apenas Notificados', key='btn_notificados', help='Filtrar apenas convidados notificados'):
-            st.session_state['filtro_notificado'] = 'Notificados'
-        if st.button('Mostrar Apenas Não Notificados', key='btn_nao_notificados', help='Filtrar apenas convidados não notificados'):
-            st.session_state['filtro_notificado'] = 'Não Notificados'
-        if st.button('Mostrar Todos', key='btn_todos', help='Mostrar todos os convidados'):
-            st.session_state['filtro_notificado'] = 'Todos'
     # Aplica o filtro
     if st.session_state['filtro_notificado'] == 'Notificados':
         df_filtro = df_filtro[df_filtro['Anfitrião Notificado'].str.lower() == 'sim']
@@ -460,15 +484,32 @@ def main():
         st.session_state['empresa_selecionada'] = None
     with col1:
         fig_top_empresas = grafico_top_empresas(df_filtro)
+        fig_top_empresas.update_layout(
+            height=420,
+            width=None,
+            margin=dict(t=60, b=40, l=40, r=40)
+        )
         selected = plotly_events(fig_top_empresas, click_event=True, select_event=False, hover_event=False, override_height=420, override_width=None)
         if selected:
             st.session_state['empresa_selecionada'] = selected[0]['x']
     with col2:
         if st.session_state['empresa_selecionada']:
             df_empresa = df_filtro[df_filtro['Cliente'] == st.session_state['empresa_selecionada']]
-            st.plotly_chart(grafico_convidados_por_data(df_empresa), use_container_width=True)
+            fig_data = grafico_convidados_por_data(df_empresa)
+            fig_data.update_layout(
+                height=420,
+                width=None,
+                margin=dict(t=60, b=40, l=40, r=40)
+            )
+            st.plotly_chart(fig_data, use_container_width=True)
         else:
-            st.plotly_chart(grafico_convidados_por_data(df_filtro), use_container_width=True)
+            fig_data = grafico_convidados_por_data(df_filtro)
+            fig_data.update_layout(
+                height=420,
+                width=None,
+                margin=dict(t=60, b=40, l=40, r=40)
+            )
+            st.plotly_chart(fig_data, use_container_width=True)
 
     # Segunda linha de gráficos (2 colunas)
     col1, col2 = st.columns(2)
