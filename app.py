@@ -466,42 +466,45 @@ def main():
     with col1:
         fig_top_empresas = grafico_top_empresas(df_filtro)
         fig_top_empresas.update_layout(
-            height=420,
+            height=440,
             width=None,
             margin=dict(t=60, b=40, l=40, r=40),
-            title_font=dict(size=24, color=CORES_IGA['azul_escuro'], family='Arial'),
+            title=dict(
+                text='<span style="font-family:Arial,sans-serif;font-size:26px;font-weight:bold;color:{};">Top 10 Empresas que Receberam Convidados</span>'.format(CORES_IGA['azul_escuro']),
+                x=0.5,
+                xanchor='center',
+                yanchor='top',
+                pad=dict(t=10, b=0)
+            ),
             plot_bgcolor=CORES_IGA['cinza_claro'],
             paper_bgcolor=CORES_IGA['cinza_claro'],
             xaxis=dict(tickangle=0, automargin=True, title=None),
         )
         fig_top_empresas.update_xaxes(tickangle=0)
-        selected = plotly_events(fig_top_empresas, click_event=True, select_event=False, hover_event=False, override_height=420, override_width=None)
+        selected = plotly_events(fig_top_empresas, click_event=True, select_event=False, hover_event=False, override_height=440, override_width=None)
         if selected:
             st.session_state['empresa_selecionada'] = selected[0]['x']
     with col2:
         if st.session_state['empresa_selecionada']:
             df_empresa = df_filtro[df_filtro['Cliente'] == st.session_state['empresa_selecionada']]
             fig_data = grafico_convidados_por_data(df_empresa)
-            fig_data.update_layout(
-                height=420,
-                width=None,
-                margin=dict(t=60, b=40, l=40, r=40),
-                title_font=dict(size=24, color=CORES_IGA['azul_escuro'], family='Arial'),
-                plot_bgcolor=CORES_IGA['cinza_claro'],
-                paper_bgcolor=CORES_IGA['cinza_claro'],
-            )
-            st.plotly_chart(fig_data, use_container_width=True)
         else:
             fig_data = grafico_convidados_por_data(df_filtro)
-            fig_data.update_layout(
-                height=420,
-                width=None,
-                margin=dict(t=60, b=40, l=40, r=40),
-                title_font=dict(size=24, color=CORES_IGA['azul_escuro'], family='Arial'),
-                plot_bgcolor=CORES_IGA['cinza_claro'],
-                paper_bgcolor=CORES_IGA['cinza_claro'],
-            )
-            st.plotly_chart(fig_data, use_container_width=True)
+        fig_data.update_layout(
+            height=440,
+            width=None,
+            margin=dict(t=60, b=40, l=40, r=40),
+            title=dict(
+                text='<span style="font-family:Arial,sans-serif;font-size:26px;font-weight:bold;color:{};">Convidados por Dia</span>'.format(CORES_IGA['azul_escuro']),
+                x=0.5,
+                xanchor='center',
+                yanchor='top',
+                pad=dict(t=10, b=0)
+            ),
+            plot_bgcolor=CORES_IGA['cinza_claro'],
+            paper_bgcolor=CORES_IGA['cinza_claro'],
+        )
+        st.plotly_chart(fig_data, use_container_width=True)
 
     # Segunda linha de gráficos (2 colunas)
     col1, col2 = st.columns(2, gap="medium")
@@ -509,22 +512,22 @@ def main():
         if st.session_state['empresa_selecionada']:
             df_empresa = df_filtro[df_filtro['Cliente'] == st.session_state['empresa_selecionada']]
             fig_semana = grafico_convidados_por_dia_semana(df_empresa)
-            fig_semana.update_layout(
-                title_font=dict(size=24, color=CORES_IGA['azul_escuro'], family='Arial'),
-                plot_bgcolor=CORES_IGA['cinza_claro'],
-                paper_bgcolor=CORES_IGA['cinza_claro'],
-            )
-            st.plotly_chart(fig_semana, use_container_width=True)
         else:
             fig_semana = grafico_convidados_por_dia_semana(df_filtro)
-            fig_semana.update_layout(
-                title_font=dict(size=24, color=CORES_IGA['azul_escuro'], family='Arial'),
-                plot_bgcolor=CORES_IGA['cinza_claro'],
-                paper_bgcolor=CORES_IGA['cinza_claro'],
-            )
-            st.plotly_chart(fig_semana, use_container_width=True)
+        fig_semana.update_layout(
+            title=dict(
+                text='<span style="font-family:Arial,sans-serif;font-size:26px;font-weight:bold;color:{};">Convidados por Dia da Semana</span>'.format(CORES_IGA['azul_escuro']),
+                x=0.5,
+                xanchor='center',
+                yanchor='top',
+                pad=dict(t=10, b=0)
+            ),
+            plot_bgcolor=CORES_IGA['cinza_claro'],
+            paper_bgcolor=CORES_IGA['cinza_claro'],
+        )
+        st.plotly_chart(fig_semana, use_container_width=True)
     with col2:
-        st.markdown('<span class="plot-title">Visitantes Frequentes por Empresa (&gt;4 visitas no mês)</span>', unsafe_allow_html=True)
+        st.markdown('<div style="text-align:center;"><span style="font-family:Arial,sans-serif;font-size:26px;font-weight:bold;color:{};">Visitantes Frequentes por Empresa (&gt;4 visitas no mês)</span></div>'.format(CORES_IGA['azul_escuro']), unsafe_allow_html=True)
         tabela_frequentes = visitantes_frequentes(df_filtro)
         if not tabela_frequentes.empty:
             st.dataframe(tabela_frequentes, height=370, use_container_width=True)
