@@ -366,69 +366,104 @@ def main():
             text-align: center;
             margin-bottom: 0.7em;
         }}
-        .filter-btn {{
-            font-size: 0.85em;
-            padding: 4px 12px;
-            border-radius: 6px;
-            background: {CORES_ITAU['cinza_claro']};
-            color: {CORES_ITAU['azul_escuro']};
-            border: 1px solid #e0e0e0;
-            cursor: pointer;
-            margin: 0 4px;
-            transition: all 0.3s ease;
-        }}
-        .filter-btn:hover {{
-            background: {CORES_ITAU['azul_escuro']};
-            color: white;
-        }}
-        .filter-btn.active {{
-            background: {CORES_ITAU['azul_escuro']};
-            color: white;
-        }}
-        .filter-container {{
+        .icon-filter-container {{
             position: absolute;
             top: 18px;
             right: 32px;
             display: flex;
-            gap: 8px;
+            gap: 12px;
             align-items: center;
             z-index: 10;
         }}
-        .card-label {{
-            font-size: 1.1em;
+        .icon-btn {{
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            background: {CORES_ITAU['cinza_claro']};
             color: {CORES_ITAU['azul_escuro']};
-            margin-bottom: 8px;
+            border: 2px solid {CORES_ITAU['azul_escuro']};
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
         }}
-        .big-number {{
-            font-size: 2.2em;
-            font-weight: bold;
-            color: {CORES_ITAU['laranja']};
+        .icon-btn.active, .icon-btn:active {{
+            background: {CORES_ITAU['azul_escuro']};
+            color: white;
+        }}
+        .icon-btn:hover {{
+            background: {CORES_ITAU['laranja']};
+            color: white;
+        }}
+        .icon-btn .tooltip {{
+            visibility: hidden;
+            width: max-content;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 4px 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            font-size: 0.85em;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }}
+        .icon-btn:hover .tooltip {{
+            visibility: visible;
+            opacity: 1;
         }}
         </style>
     """, unsafe_allow_html=True)
 
-    # Container para os botões de filtro no topo direito
-    st.markdown('<div class="filter-container">', unsafe_allow_html=True)
+    # Container para os botões de filtro no topo direito (ícones)
+    st.markdown('<div class="icon-filter-container">', unsafe_allow_html=True)
     
-    # Botões de filtro
     if 'filtro_notificado' not in st.session_state:
         st.session_state['filtro_notificado'] = 'Todos'
     
-    col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
-    with col1:
-        if st.button('Notificados', key='btn_notificados', help='Filtrar apenas convidados notificados'):
-            st.session_state['filtro_notificado'] = 'Notificados'
-    with col2:
-        if st.button('Não Notificados', key='btn_nao_notificados', help='Filtrar apenas convidados não notificados'):
-            st.session_state['filtro_notificado'] = 'Não Notificados'
-    with col3:
-        if st.button('Todos', key='btn_todos', help='Mostrar todos os convidados'):
-            st.session_state['filtro_notificado'] = 'Todos'
-    with col4:
-        if st.button('Limpar seleção', key='btn_limpar', help='Limpar seleção atual'):
-            st.session_state['empresa_selecionada'] = None
-            st.experimental_rerun()
-    
+    # Ícones unicode para cada botão
+    icones = {
+        'Notificados': '🔔',
+        'Não Notificados': '🔕',
+        'Todos': '📋',
+        'Limpar seleção': '❌',
+    }
+    tooltips = {
+        'Notificados': 'Mostrar apenas convidados notificados',
+        'Não Notificados': 'Mostrar apenas convidados não notificados',
+        'Todos': 'Mostrar todos os convidados',
+        'Limpar seleção': 'Limpar seleção de empresa',
+    }
+    botoes = ['Notificados', 'Não Notificados', 'Todos', 'Limpar seleção']
+    for btn in botoes:
+        active = ''
+        if btn == 'Notificados' and st.session_state['filtro_notificado'] == 'Notificados':
+            active = 'active'
+        elif btn == 'Não Notificados' and st.session_state['filtro_notificado'] == 'Não Notificados':
+            active = 'active'
+        elif btn == 'Todos' and st.session_state['filtro_notificado'] == 'Todos':
+            active = 'active'
+        # Botão
+        if btn != 'Limpar seleção':
+            if st.markdown(f'''<button class="icon-btn {active}" title="{tooltips[btn]}" onclick="window.location.search='?{btn.replace(' ', '_').lower()}=1'">{icones[btn]}<span class="tooltip">{tooltips[btn]}</span></button>''', unsafe_allow_html=True):
+                if btn == 'Notificados':
+                    st.session_state['filtro_notificado'] = 'Notificados'
+                elif btn == 'Não Notificados':
+                    st.session_state['filtro_notificado'] = 'Não Notificados'
+                elif btn == 'Todos':
+                    st.session_state['filtro_notificado'] = 'Todos'
+        else:
+            if st.markdown(f'''<button class="icon-btn" title="{tooltips[btn]}" onclick="window.location.search='?limpar=1'">{icones[btn]}<span class="tooltip">{tooltips[btn]}</span></button>''', unsafe_allow_html=True):
+                st.session_state['empresa_selecionada'] = None
+                st.experimental_rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="main-title modern-title">Dashboard de Visitas - Cubo Itaú</div>', unsafe_allow_html=True)
