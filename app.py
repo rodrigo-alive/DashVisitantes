@@ -366,16 +366,7 @@ def main():
             text-align: center;
             margin-bottom: 0.7em;
         }}
-        .icon-filter-container {{
-            position: absolute;
-            top: 18px;
-            right: 32px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            z-index: 10;
-        }}
-        .icon-btn {{
+        .icon-btn-st {{
             width: 38px;
             height: 38px;
             border-radius: 8px;
@@ -390,81 +381,42 @@ def main():
             transition: all 0.2s;
             position: relative;
         }}
-        .icon-btn.active, .icon-btn:active {{
+        .icon-btn-st.selected {{
             background: {CORES_ITAU['azul_escuro']};
             color: white;
         }}
-        .icon-btn:hover {{
+        .icon-btn-st:hover {{
             background: {CORES_ITAU['laranja']};
             color: white;
-        }}
-        .icon-btn .tooltip {{
-            visibility: hidden;
-            width: max-content;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 4px 8px;
-            position: absolute;
-            z-index: 1;
-            bottom: 120%;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            font-size: 0.85em;
-            transition: opacity 0.2s;
-            pointer-events: none;
-        }}
-        .icon-btn:hover .tooltip {{
-            visibility: visible;
-            opacity: 1;
         }}
         </style>
     """, unsafe_allow_html=True)
 
-    # Container para os botões de filtro no topo direito (ícones)
-    st.markdown('<div class="icon-filter-container">', unsafe_allow_html=True)
-    
+    # Linha de botões de filtro no topo à direita
+    filtro_cols = st.columns([8,1,1,1,1])
+    # Espaço à esquerda (filtro_cols[0])
+    icones = ['🔔', '🔕', '📋', '❌']
+    tooltips = [
+        'Mostrar apenas convidados notificados',
+        'Mostrar apenas convidados não notificados',
+        'Mostrar todos os convidados',
+        'Limpar seleção de empresa'
+    ]
+    nomes = ['Notificados', 'Não Notificados', 'Todos', 'Limpar seleção']
     if 'filtro_notificado' not in st.session_state:
         st.session_state['filtro_notificado'] = 'Todos'
-    
-    # Ícones unicode para cada botão
-    icones = {
-        'Notificados': '🔔',
-        'Não Notificados': '🔕',
-        'Todos': '📋',
-        'Limpar seleção': '❌',
-    }
-    tooltips = {
-        'Notificados': 'Mostrar apenas convidados notificados',
-        'Não Notificados': 'Mostrar apenas convidados não notificados',
-        'Todos': 'Mostrar todos os convidados',
-        'Limpar seleção': 'Limpar seleção de empresa',
-    }
-    botoes = ['Notificados', 'Não Notificados', 'Todos', 'Limpar seleção']
-    for btn in botoes:
-        active = ''
-        if btn == 'Notificados' and st.session_state['filtro_notificado'] == 'Notificados':
-            active = 'active'
-        elif btn == 'Não Notificados' and st.session_state['filtro_notificado'] == 'Não Notificados':
-            active = 'active'
-        elif btn == 'Todos' and st.session_state['filtro_notificado'] == 'Todos':
-            active = 'active'
-        # Botão
-        if btn != 'Limpar seleção':
-            if st.markdown(f'''<button class="icon-btn {active}" title="{tooltips[btn]}" onclick="window.location.search='?{btn.replace(' ', '_').lower()}=1'">{icones[btn]}<span class="tooltip">{tooltips[btn]}</span></button>''', unsafe_allow_html=True):
-                if btn == 'Notificados':
-                    st.session_state['filtro_notificado'] = 'Notificados'
-                elif btn == 'Não Notificados':
-                    st.session_state['filtro_notificado'] = 'Não Notificados'
-                elif btn == 'Todos':
-                    st.session_state['filtro_notificado'] = 'Todos'
-        else:
-            if st.markdown(f'''<button class="icon-btn" title="{tooltips[btn]}" onclick="window.location.search='?limpar=1'">{icones[btn]}<span class="tooltip">{tooltips[btn]}</span></button>''', unsafe_allow_html=True):
-                st.session_state['empresa_selecionada'] = None
-                st.experimental_rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+    for i, (col, icone, tooltip, nome) in enumerate(zip(filtro_cols[1:], icones, tooltips, nomes)):
+        btn_class = 'icon-btn-st'
+        if nome == st.session_state['filtro_notificado']:
+            btn_class += ' selected'
+        with col:
+            if col.button(f"{icone}", key=f"btn_{nome}", help=tooltip):
+                if nome == 'Limpar seleção':
+                    st.session_state['empresa_selecionada'] = None
+                    st.experimental_rerun()
+                else:
+                    st.session_state['filtro_notificado'] = nome
+    # Fim dos botões de filtro
 
     st.markdown('<div class="main-title modern-title">Dashboard de Visitas - Cubo Itaú</div>', unsafe_allow_html=True)
     
