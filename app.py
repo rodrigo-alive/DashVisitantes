@@ -23,11 +23,11 @@ st.set_page_config(
     initial_sidebar_state='collapsed'
 )
 
-# Cores do Itaú
-CORES_ITAU = {
-    'laranja': '#EC7000',
-    'azul_escuro': '#003366',
-    'azul_claro': '#0057FF',
+# Cores da IGA
+CORES_IGA = {
+    'laranja': '#FF6A13',
+    'azul_escuro': '#00285D',
+    'azul_claro': '#009DDC',
     'branco': '#FFFFFF',
     'cinza_claro': '#F5F6FA'
 }
@@ -160,12 +160,12 @@ def grafico_top_empresas(df):
         x='Empresa',
         y='Convites',
         title='Top 10 Empresas que Receberam Convidados',
-        color_discrete_sequence=[CORES_ITAU['azul_escuro']]
+        color_discrete_sequence=[CORES_IGA['azul_escuro']]
     )
     fig.update_traces(text=df_plot['Convites'], textposition='outside')
     fig.update_layout(
-        plot_bgcolor=CORES_ITAU['cinza_claro'],
-        paper_bgcolor=CORES_ITAU['cinza_claro'],
+        plot_bgcolor=CORES_IGA['cinza_claro'],
+        paper_bgcolor=CORES_IGA['cinza_claro'],
         title_font_size=22,
         title_font_family='Arial',
         title_x=0.5,
@@ -198,13 +198,13 @@ def grafico_convidados_por_data(df):
         x='Dia',
         y='Convidados',
         title='Convidados por Dia',
-        color_discrete_sequence=[CORES_ITAU['laranja']]
+        color_discrete_sequence=[CORES_IGA['laranja']]
     )
     fig.update_traces(text=df_plot['Convidados'], textposition='outside')
     fig.update_xaxes(tickangle=0, dtick=1, tickmode='array', tickvals=[str(i) for i in range(1, dias_no_mes+1)], ticktext=[str(i) for i in range(1, dias_no_mes+1)], title=None)
     fig.update_layout(
-        plot_bgcolor=CORES_ITAU['cinza_claro'],
-        paper_bgcolor=CORES_ITAU['cinza_claro'],
+        plot_bgcolor=CORES_IGA['cinza_claro'],
+        paper_bgcolor=CORES_IGA['cinza_claro'],
         title_font_size=22,
         title_font_family='Arial',
         title_x=0.5,
@@ -225,12 +225,12 @@ def grafico_convidados_por_dia_semana(df):
         x='Dia da Semana',
         y='Convidados',
         title='Convidados por Dia da Semana',
-        color_discrete_sequence=[CORES_ITAU['azul_escuro']]
+        color_discrete_sequence=[CORES_IGA['azul_escuro']]
     )
     fig.update_traces(text=df_plot['Convidados'], textposition='outside')
     fig.update_layout(
-        plot_bgcolor=CORES_ITAU['cinza_claro'],
-        paper_bgcolor=CORES_ITAU['cinza_claro'],
+        plot_bgcolor=CORES_IGA['cinza_claro'],
+        paper_bgcolor=CORES_IGA['cinza_claro'],
         title_font_size=22,
         title_font_family='Arial',
         title_x=0.5,
@@ -276,7 +276,7 @@ def consolidado_frequentes_grafico(df):
         x=ocorrencias.values,
         y=[f"{i} visitantes" for i in ocorrencias.index],
         orientation='h',
-        marker_color=CORES_ITAU['azul_escuro'],
+        marker_color=CORES_IGA['azul_escuro'],
         text=ocorrencias.values,
         textposition='outside'
     ))
@@ -284,8 +284,8 @@ def consolidado_frequentes_grafico(df):
         title='Empresas por quantidade de visitantes frequentes',
         xaxis_title='Quantidade de Empresas',
         yaxis_title='',
-        plot_bgcolor=CORES_ITAU['cinza_claro'],
-        paper_bgcolor=CORES_ITAU['cinza_claro'],
+        plot_bgcolor=CORES_IGA['cinza_claro'],
+        paper_bgcolor=CORES_IGA['cinza_claro'],
         height=300
     )
     return fig
@@ -345,7 +345,7 @@ def main():
     st.markdown(f"""
         <style>
         .modern-card {{
-            background: {CORES_ITAU['cinza_claro']};
+            background: {CORES_IGA['cinza_claro']};
             border-radius: 18px;
             padding: 24px 16px 16px 16px;
             margin-bottom: 12px;
@@ -360,34 +360,28 @@ def main():
             align-items: center;
         }}
         .modern-title {{
-            font-size: 2.1em;
+            font-size: 3.2em;
             font-weight: bold;
-            color: {CORES_ITAU['azul_escuro']};
+            color: {CORES_IGA['azul_escuro']};
             text-align: center;
             margin-bottom: 0.7em;
         }}
-        .icon-btn-st {{
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
-            background: {CORES_ITAU['cinza_claro']};
-            color: {CORES_ITAU['azul_escuro']};
-            border: 2px solid {CORES_ITAU['azul_escuro']};
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3em;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
+        .card-label {{
+            font-size: 1.2em;
+            color: {CORES_IGA['azul_escuro']};
+            margin-bottom: 8px;
         }}
-        .icon-btn-st.selected {{
-            background: {CORES_ITAU['azul_escuro']};
-            color: white;
+        .big-number {{
+            font-size: 2.5em;
+            font-weight: bold;
+            color: {CORES_IGA['laranja']};
         }}
-        .icon-btn-st:hover {{
-            background: {CORES_ITAU['laranja']};
-            color: white;
+        .plot-title {{
+            font-size: 1.5em !important;
+            font-family: 'Arial', sans-serif !important;
+            color: {CORES_IGA['azul_escuro']} !important;
+            text-align: center !important;
+            font-weight: bold !important;
         }}
         </style>
     """, unsafe_allow_html=True)
@@ -466,7 +460,7 @@ def main():
         st.markdown(f'<div class="modern-card"><div class="card-label">Média por Dia Útil</div><div class="big-number">{media_convidados_dia_util(df)}</div></div>', unsafe_allow_html=True)
 
     # Primeira linha de gráficos (2 colunas)
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2, gap="medium")
     if 'empresa_selecionada' not in st.session_state:
         st.session_state['empresa_selecionada'] = None
     with col1:
@@ -474,8 +468,13 @@ def main():
         fig_top_empresas.update_layout(
             height=420,
             width=None,
-            margin=dict(t=60, b=40, l=40, r=40)
+            margin=dict(t=60, b=40, l=40, r=40),
+            title_font=dict(size=24, color=CORES_IGA['azul_escuro'], family='Arial'),
+            plot_bgcolor=CORES_IGA['cinza_claro'],
+            paper_bgcolor=CORES_IGA['cinza_claro'],
+            xaxis=dict(tickangle=0, automargin=True, title=None),
         )
+        fig_top_empresas.update_xaxes(tickangle=0)
         selected = plotly_events(fig_top_empresas, click_event=True, select_event=False, hover_event=False, override_height=420, override_width=None)
         if selected:
             st.session_state['empresa_selecionada'] = selected[0]['x']
@@ -486,7 +485,10 @@ def main():
             fig_data.update_layout(
                 height=420,
                 width=None,
-                margin=dict(t=60, b=40, l=40, r=40)
+                margin=dict(t=60, b=40, l=40, r=40),
+                title_font=dict(size=24, color=CORES_IGA['azul_escuro'], family='Arial'),
+                plot_bgcolor=CORES_IGA['cinza_claro'],
+                paper_bgcolor=CORES_IGA['cinza_claro'],
             )
             st.plotly_chart(fig_data, use_container_width=True)
         else:
@@ -494,20 +496,35 @@ def main():
             fig_data.update_layout(
                 height=420,
                 width=None,
-                margin=dict(t=60, b=40, l=40, r=40)
+                margin=dict(t=60, b=40, l=40, r=40),
+                title_font=dict(size=24, color=CORES_IGA['azul_escuro'], family='Arial'),
+                plot_bgcolor=CORES_IGA['cinza_claro'],
+                paper_bgcolor=CORES_IGA['cinza_claro'],
             )
             st.plotly_chart(fig_data, use_container_width=True)
 
     # Segunda linha de gráficos (2 colunas)
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2, gap="medium")
     with col1:
         if st.session_state['empresa_selecionada']:
             df_empresa = df_filtro[df_filtro['Cliente'] == st.session_state['empresa_selecionada']]
-            st.plotly_chart(grafico_convidados_por_dia_semana(df_empresa), use_container_width=True)
+            fig_semana = grafico_convidados_por_dia_semana(df_empresa)
+            fig_semana.update_layout(
+                title_font=dict(size=24, color=CORES_IGA['azul_escuro'], family='Arial'),
+                plot_bgcolor=CORES_IGA['cinza_claro'],
+                paper_bgcolor=CORES_IGA['cinza_claro'],
+            )
+            st.plotly_chart(fig_semana, use_container_width=True)
         else:
-            st.plotly_chart(grafico_convidados_por_dia_semana(df_filtro), use_container_width=True)
+            fig_semana = grafico_convidados_por_dia_semana(df_filtro)
+            fig_semana.update_layout(
+                title_font=dict(size=24, color=CORES_IGA['azul_escuro'], family='Arial'),
+                plot_bgcolor=CORES_IGA['cinza_claro'],
+                paper_bgcolor=CORES_IGA['cinza_claro'],
+            )
+            st.plotly_chart(fig_semana, use_container_width=True)
     with col2:
-        st.subheader('Visitantes Frequentes por Empresa (>4 visitas no mês)')
+        st.markdown('<span class="plot-title">Visitantes Frequentes por Empresa (&gt;4 visitas no mês)</span>', unsafe_allow_html=True)
         tabela_frequentes = visitantes_frequentes(df_filtro)
         if not tabela_frequentes.empty:
             st.dataframe(tabela_frequentes, height=370, use_container_width=True)
